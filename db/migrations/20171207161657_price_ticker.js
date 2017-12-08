@@ -10,7 +10,7 @@ exports.up = function(knex, Promise) {
         table.float('bid_price').notNullable().defaultTo(0);
         table.float('open_price').notNullable().defaultTo(0);
         table.float('spread').notNullable().defaultTo(0);
-        table.string('source').notNullable().defaultTo(0);
+        table.string('source').notNullable().defaultTo('');
 
         table.timestamp('time').notNullable().defaultTo(knex.raw('now()'));
     });
