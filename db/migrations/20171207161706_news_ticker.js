@@ -3,14 +3,14 @@ exports.up = function(knex, Promise) {
     return knex.schema.createTable('news_ticker', function(table){
         table.increments();
 
-        table.string('url').nullable();
+        table.text('url').nullable();
         table.string('source_id').nullable();
         table.string('source_name').nullable();
-        table.string('author').nullable();
-        table.string('title');
-        table.string('description').nullable();
-        table.string('img_url').nullable();
-        table.string('published_at');
+        table.string('author').notNullable().index();
+        table.string('title').notNullable().index();
+        table.text('description').nullable();
+        table.text('img_url').nullable();
+        table.timestamp('published_at').notNullable();
 
         table.timestamp('created_at').notNullable().defaultTo(knex.raw('now()'));
     });

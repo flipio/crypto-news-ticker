@@ -1,5 +1,4 @@
 var Model = require('objection').Model;
-var Post = require('./Post');
 
 // Extends Model constructor.
 function NewsTicker() {
@@ -10,4 +9,4 @@ Model.extend(NewsTicker);
 module.exports = NewsTicker;
 
 // Table name is the only required property;
-NewsTicker.tableName = 'news_ticer';
+NewsTicker.tableName = 'news_ticker';

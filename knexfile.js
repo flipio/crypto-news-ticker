@@ -1,11 +1,5 @@
-// In terminal open psql and create a new database. Then include the name of the database and your username and password in the development details below
-// Run the following terminal command
-// $ psql
-// # CREATE DATABASE nameofyourdatabase;
-// Note: remember the semicolon syntax
-// # \q
+require('dotenv').config();
 
-// To check if database was created run psql and \l to see full list of databases
 module.exports = {
     development: {
         client: "pg",

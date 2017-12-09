@@ -12,7 +12,7 @@ exports.up = function(knex, Promise) {
         table.float('spread').notNullable().defaultTo(0);
         table.string('source').nullable();
 
-        table.timestamp('time').notNullable().defaultTo(knex.raw('now()'));
+        table.timestamp('time').notNullable().defaultTo(knex.raw('now()')).index();
     });
 };
 

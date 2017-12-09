@@ -1,6 +1,4 @@
 
-require('dotenv').config();
-
 var express = require('express');
 var methodOverride = require('method-override');
 var sassMiddleware = require('node-sass-middleware');
