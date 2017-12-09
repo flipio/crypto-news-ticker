@@ -20,7 +20,7 @@
     "express-handlebars": "^3.0.0",
     "express-session": "^1.14.2",
     "knex": "^0.12.6",
-    "kraken-js-client": "^1.1.4",
+    "kraken-js-client": "^1.1.5",
     "method-override": "^2.3.7",
     "morgan": "~1.7.0",
     "node-sass-middleware": "0.9.8",
