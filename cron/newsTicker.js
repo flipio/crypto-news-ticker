@@ -30,7 +30,11 @@ let findOrInsert = function (obj) {
             .where('title', obj.title)
             .where('published_at', obj.published_at)
             .then((news) => {
+
                 if (news.length === 0) {
+
+                    console.log(MODULE_NAME + ' Adding news: ', obj);
+
                     Model
                         .query()
                         .insert(obj)
@@ -56,7 +60,8 @@ let options = {
     qs: {
         apiKey: newsApiKey,
         q: search.join(','),
-        sortBy: 'popularity'
+        sortBy: 'relevancy',
+        page: 1
     },
     headers: {
         'User-Agent': 'Request-Promise'
