@@ -9,6 +9,13 @@ const Model = require('../models/NewsTicker');
 const newsApiKey = process.env.NEWS_API_KEY;
 const MODULE_NAME = '[CRON:NEWS]';
 
+/**
+ * Number of pages to retrive from news api
+ * @type {number}
+ */
+const PAGES_NUM = 50;
+
+let countAdded = 0;
 // let search = ['bitcoin', 'cryptocurrency', 'cryptocoins'];
 let search = ['bitcoin'];
 
@@ -23,7 +30,7 @@ let extractField = function (o, f) {
 
 let findOrInsert = function (obj) {
     return new Promise((resolve, reject) => {
-            Model
+        Model
             .query()
             .where('source_name', obj.source_name)
             .where('author', obj.author)
@@ -38,76 +45,114 @@ let findOrInsert = function (obj) {
                     Model
                         .query()
                         .insert(obj)
-                        .then(resolve)
+                        .then((d) => {
+                            console.log('Added new news', obj);
+                            countAdded++;
+                            resolve(d);
+                        })
                         .catch((e) => {
-                            console.log(obj);
+                            console.log('Error inserting new news: ', obj);
                             reject(e);
                         });
+
                 } else {
                     console.log('News allready exist, skip inserting.', obj.title, obj.author);
                     resolve();
                 }
             }).catch((e) => {
-                console.log(e);
-                reject(e);
-            });
+            console.log(e);
+            reject(e);
+        });
     });
 
 };
 
-let options = {
-    uri: 'https://newsapi.org/v2/everything',
-    qs: {
-        apiKey: newsApiKey,
-        q: search.join(','),
-        sortBy: 'relevancy',
-        page: 1
-    },
-    headers: {
-        'User-Agent': 'Request-Promise'
-    },
-    json: true
+
+let sendRequest = function (pageNum) {
+    console.log('Fetching news for page: ' + pageNum);
+
+    let options = {
+        uri: 'https://newsapi.org/v2/everything',
+        qs: {
+            apiKey: newsApiKey,
+            q: search.join(','),
+            sortBy: 'relevancy',
+            page: pageNum
+        },
+        headers: {
+            'User-Agent': 'Request-Promise'
+        },
+        json: true
+    };
+
+    return new Promise((resolve, reject) => {
+
+        request(options)
+            .then((body) => {
+
+                let articles = body.articles || [];
+
+                let toDefer = [];
+                articles.forEach((a) => {
+
+                    let data = {
+                        url: extractField(a, 'url'),
+                        source_id: extractField(a.source, 'id'),
+                        source_name: extractField(a.source, 'name'),
+                        author: extractField(a, 'author'),
+                        title: extractField(a, 'title'),
+                        description: extractField(a, 'description'),
+                        img_url: extractField(a, 'urlToImage'),
+                        published_at: new Date(extractField(a, 'publishedAt')).toUTCString()
+                    };
+
+                    toDefer.push(findOrInsert(data));
+
+                });
+
+                Promise.all(toDefer)
+                    .then(() => {
+                        console.log(MODULE_NAME + ' News crone for page ' + pageNum + ' done.');
+                        resolve()
+                    })
+                    .catch((e) => {
+                        console.log(e);
+                        console.log(MODULE_NAME + ' Err happened while inserting new news.');
+                        reject();
+                    });
+
+
+            })
+            .catch((err) => {
+                console.log(MODULE_NAME + ' Err happened while fetching news page ' + pageNum);
+                console.log(err);
+                reject();
+            });
+
+    });
+
 };
 
-request(options)
-    .then((body) => {
+let runCollector = function () {
 
-        let articles = body.articles || [];
+    let toDefer = [];
 
-        let toDefer = [];
-        articles.forEach((a) => {
+    for (let i = 1; i <= PAGES_NUM; i++) {
+        toDefer.push(sendRequest(i));
+    }
 
-            let data = {
-                url: extractField(a, 'url'),
-                source_id: extractField(a.source, 'id'),
-                source_name: extractField(a.source, 'name'),
-                author: extractField(a, 'author'),
-                title: extractField(a, 'title'),
-                description: extractField(a,'description'),
-                img_url: extractField(a, 'urlToImage'),
-                published_at: new Date(extractField(a, 'publishedAt')).toUTCString()
-            };
-
-            toDefer.push(findOrInsert(data));
-
+    Promise
+        .all(toDefer)
+        .then(() => {
+            console.log('Finished news cron ticker job. New news added: ' + countAdded);
+            db.destroy();
+            process.exit(0);
+        })
+        .catch(() => {
+            console.log(MODULE_NAME + ' Err happened in news ticker cron. New news added: ' + countAdded );
+            process.exit(1);
         });
 
-        Promise.all(toDefer)
-            .then(() => {
-                console.log(MODULE_NAME + ' News crone done.');
-                db.destroy();
-                process.exit(0)
-            })
-            .catch((e) => {
-                console.log(e);
-                console.log(MODULE_NAME + ' Err happened while inserting new news.');
-                process.exit(1);
-            });
+};
 
-    })
-    .catch((err) => {
-        console.log(MODULE_NAME + ' Err happened in news ticker cron.');
-        console.log(err);
-        process.exit(1);
-    });
-
+runCollector();
