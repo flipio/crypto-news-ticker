@@ -71,7 +71,8 @@ OHLC
                 'volume_weighted_average_price': d.volumeWeightedAveragePrice,
                 'count': d.count,
                 'time': new Date(d.time * 1000).toUTCString(),
-                'type': 'BTC'
+                'type': 'BTC',
+                'source_id': 1
             };
 
             toDefer.push(findOrInsert(data, d.time));
