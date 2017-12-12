@@ -31,7 +31,7 @@ Ticker
             close_price_volume: parseFloat(closePriceVolume),
             spread: parseFloat(spread),
             open_price: parseFloat(openPrice),
-            source: 'https://api.kraken.com',
+            source_id: 1,
             type: 'BTC'
         };
 
