@@ -15,7 +15,7 @@ const NEWS_EVERYTHING = 'everything';
  * Number of pages to retrive from news api
  * @type {number}
  */
-const PAGES_NUM = 2;
+const PAGES_NUM = 20;
 
 let countAdded = 0;
 // let search = ['bitcoin', 'cryptocurrency', 'cryptocoins'];
