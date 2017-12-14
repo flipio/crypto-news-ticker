@@ -8,12 +8,14 @@ const Model = require('../models/NewsTicker');
 
 const newsApiKey = process.env.NEWS_API_KEY;
 const MODULE_NAME = '[CRON:NEWS]';
+const NEWS_TOP_HEADLIENS = 'top-headlines';
+const NEWS_EVERYTHING = 'everything';
 
 /**
  * Number of pages to retrive from news api
  * @type {number}
  */
-const PAGES_NUM = 50;
+const PAGES_NUM = 2;
 
 let countAdded = 0;
 // let search = ['bitcoin', 'cryptocurrency', 'cryptocoins'];
@@ -68,11 +70,13 @@ let findOrInsert = function (obj) {
 };
 
 
-let sendRequest = function (pageNum) {
-    console.log('Fetching news for page: ' + pageNum);
+let sendRequest = function (pageNum, section) {
+    section = section || 'top-headlines';
+
+    console.log('Fetching news for page: ' + pageNum + ', for section: ' + section);
 
     let options = {
-        uri: 'https://newsapi.org/v2/everything',
+        uri: 'https://newsapi.org/v2/' + section,
         qs: {
             apiKey: newsApiKey,
             q: search.join(','),
@@ -112,12 +116,12 @@ let sendRequest = function (pageNum) {
 
                 Promise.all(toDefer)
                     .then(() => {
-                        console.log(MODULE_NAME + ' News crone for page ' + pageNum + ' done.');
+                        console.log(MODULE_NAME + ' News crone for page ' + pageNum + ' done. Section: ' + section);
                         resolve()
                     })
                     .catch((e) => {
                         console.log(e);
-                        console.log(MODULE_NAME + ' Err happened while inserting new news.');
+                        console.log(MODULE_NAME + ' Err happened while inserting new news. Page: ' + pageNum + ', Section: ' + section);
                         reject();
                     });
 
@@ -138,7 +142,8 @@ let runCollector = function () {
     let toDefer = [];
 
     for (let i = 1; i <= PAGES_NUM; i++) {
-        toDefer.push(sendRequest(i));
+        toDefer.push(sendRequest(i, NEWS_TOP_HEADLIENS));
+        toDefer.push(sendRequest(i, NEWS_EVERYTHING));
     }
 
     Promise
