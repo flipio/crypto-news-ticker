@@ -19,10 +19,18 @@ var app = express();
 
 // ENABLE CORS specificiation standard script from enable-cors https://enable-cors.org/server_expressjs.html
 app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-
-    next();
+    res.setHeader("Access-Control-Allow-Origin", '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST,GET,OPTIONS,PUT,DELETE');
+    res.setHeader('Access-Control-Allow-Headers', '*');
+    //intercepts OPTIONS method
+    if ('OPTIONS' === req.method) {
+        //respond with 200
+        res.sendStatus(200)
+    }
+    else {
+        //move on
+        next();
+    }
 });
 
 // ===BP: EXPRESS-HANDLEBARS
