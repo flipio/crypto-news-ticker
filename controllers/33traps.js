@@ -17,6 +17,9 @@ var insertOrUpdate = function (data) {
                     return deferred.resolve(records[0])
                 }
 
+                data.updated_at = new Date().toISOString();
+                console.log('Updating score for nickname: ', data.nickname, data.updated_at);
+
                 Traps
                     .query()
                     .update(data)
@@ -53,10 +56,24 @@ var insertOrUpdate = function (data) {
 };
 
 router.get('/leaderboard', function (req, res, next) {
+
+    let limit = 10;
+
+    if (req.query.limit) {
+        try {
+            let temp = parseInt(req.query.limit);
+            if (temp < 101) {
+                limit = temp;
+            }
+        } catch (e) {
+            console.log('Limit not passed as number or string number.');
+        }
+    }
+
     Traps
         .query()
         .orderBy('record')
-        .limit(10)
+        .limit(limit)
         .then(function (data) {
             res.status(200).json({
                 status: 'OK',
