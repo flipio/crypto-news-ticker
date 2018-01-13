@@ -56,7 +56,7 @@ router.get('/leaderboard', function (req, res, next) {
     Traps
         .query()
         .orderBy('record')
-        .limit(20)
+        .limit(10)
         .then(function (data) {
             res.status(200).json({
                 status: 'OK',
