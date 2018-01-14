@@ -21,7 +21,7 @@ var app = express();
 app.use(function (req, res, next) {
     res.setHeader("Access-Control-Allow-Origin", '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST,GET,OPTIONS,PUT,DELETE');
-    res.setHeader('Access-Control-Allow-Headers', '*');
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     //intercepts OPTIONS method
     if ('OPTIONS' === req.method) {
         //respond with 200
