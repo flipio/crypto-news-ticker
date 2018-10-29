@@ -75,6 +75,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // ===BP: REQUIRE ROUTES
 app.use(require('./routes/index.js'));
 app.use('/api/33traps', require('./controllers/33traps.js'));
+app.use('/api/generator', require('./controllers/generator.js'));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
