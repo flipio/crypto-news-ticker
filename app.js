@@ -1,7 +1,7 @@
 
 var express = require('express');
 var methodOverride = require('method-override');
-var sassMiddleware = require('node-sass-middleware');
+// var sassMiddleware = require('node-sass-middleware');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -63,12 +63,12 @@ app.use(methodOverride(function (req, res) {
 }));
 
 // ===BP: NODE-SASS-MIDDLEWARE
-app.use(sassMiddleware({
-    src: path.join(__dirname, 'public'),
-    dest: path.join(__dirname, 'public'),
-    debug: true,
-    outputStyle: 'compressed'
-}));
+// app.use(sassMiddleware({
+//     src: path.join(__dirname, 'public'),
+//     dest: path.join(__dirname, 'public'),
+//     debug: true,
+//     outputStyle: 'compressed'
+// }));
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -76,6 +76,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(require('./routes/index.js'));
 app.use('/api/33traps', require('./controllers/33traps.js'));
 app.use('/api/generator', require('./controllers/generator.js'));
+app.use('/api/bridgehr', require('./controllers/bridgehr.js'));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
